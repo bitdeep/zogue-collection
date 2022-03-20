@@ -31,12 +31,19 @@ async function load() {
 }
 
 async function contractStats(){
-    /*
     const PRESALE_ACTIVE = await main.methods.PRESALE_ACTIVE().call();
-    $('#PRESALE_ACTIVE').html(PRESALE_ACTIVE?'true':'false');
+    $('#PRESALE_ACTIVE').css('display', PRESALE_ACTIVE?'':'none');
 
     const SALE_ACTIVE = await main.methods.SALE_ACTIVE().call();
-    $('#SALE_ACTIVE').html(SALE_ACTIVE?'true':'false');
+    $('#SALE_ACTIVE').css('display', SALE_ACTIVE?'':'none');
+
+    PRESALE_PRICE = await main.methods.PRESALE_PRICE().call();
+    $('#PRESALE_PRICE').html(PRESALE_PRICE/1e18);
+
+    PUBLIC_SALE_PRICE = await main.methods.PUBLIC_SALE_PRICE().call();
+    $('#PUBLIC_SALE_PRICE').html(PUBLIC_SALE_PRICE/1e18);
+
+    /*
 
     const name = await main.methods.name().call();
     $('#name').html(name);
@@ -46,12 +53,6 @@ async function contractStats(){
 
     const FEE_RECIPIENT = await main.methods.FEE_RECIPIENT().call();
     $('#FEE_RECIPIENT').html(FEE_RECIPIENT);
-
-    PRESALE_PRICE = await main.methods.PRESALE_PRICE().call();
-    $('#PRESALE_PRICE').html(PRESALE_PRICE);
-
-    PUBLIC_SALE_PRICE = await main.methods.PUBLIC_SALE_PRICE().call();
-    $('#PUBLIC_SALE_PRICE').html(PUBLIC_SALE_PRICE);
 
     const totalSupply = await main.methods.totalSupply().call();
     $('#totalSupply').html(totalSupply);
