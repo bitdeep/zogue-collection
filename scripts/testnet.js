@@ -14,7 +14,7 @@ async function main() {
     await Main.setPresaleStatus(true);
     await Main.setSaleStatus(true);
     await Main.setWhitelist(dev, true);
-    await Main.setBaseURI('http://localhost:63342/zogue/app/metadata/');
+    await Main.setBaseURI('https://zogue-collection.pages.dev/metadata/');
 
     /*
     await hre.run("verify:verify", {

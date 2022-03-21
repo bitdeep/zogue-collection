@@ -1,5 +1,5 @@
 // testnet bsc
-const mainAddress = '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0';
+const mainAddress = '0x95B7FB1da941B6FD1952D85f2d762F11CB00E856';
 let web3, account, main;
 
 // hold both prices of a public and whitelisted mint

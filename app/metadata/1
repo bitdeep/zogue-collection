@@ -1,8 +1,8 @@
 {
   "name": "Zogue #1",
   "file": "1.png",
-  "description": "Spread across Labyrinth City live the Mint O' Taurs. A total of 5000 specimens ranked in 4 different social groups called NFTiers: Common, Bronze, Silver and Gold. Within the city walls, the Mint O'Taurs train and compete for a higher status.",
-  "image": "http://localhost:63342/zogue/app/metadata/1.png",
+  "description": "description",
+  "image": "https://zogue-collection.pages.dev/metadata/1.png",
   "attributes": [
     {
       "trait_type": "BACKGROUND",
