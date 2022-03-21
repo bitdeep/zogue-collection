@@ -2,17 +2,27 @@ const hre = require("hardhat");
 require("@nomiclabs/hardhat-etherscan");
 // npx hardhat run scripts\testnet.js --network testnet
 async function main() {
-    // this is the same root generated in the test file
-    // for live contract generate a new, see test-case:
+
+    const [_dev, _user, _fee] = await hre.ethers.getSigners();
+    const dev = _dev.address;
+    const fee = _fee.address;
     const _Main = await hre.ethers.getContractFactory("Main");
     const Main = await _Main.deploy();
     await Main.deployed();
     console.log("Main:", Main.address);
 
+    await Main.setPresaleStatus(true);
+    await Main.setSaleStatus(true);
+    await Main.setWhitelist(dev, true);
+    await Main.setBaseURI('http://localhost:63342/zogue/app/metadata/');
+
+    /*
     await hre.run("verify:verify", {
         address: Main.address,
         constructorArguments: [],
     });
+    */
+
 
 }
 

@@ -1,3 +1,6 @@
+// testnet bsc
+const mainAddress = '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0';
+let web3, account, main;
 
 // hold both prices of a public and whitelisted mint
 let PRESALE_PRICE,
@@ -62,10 +65,14 @@ async function contractStats(){
 
     $('#minterAddress').val(account);
     */
+
+    loadLastMintedNft();
+
 }
 
 async function onLoad(){
     load();
+
     // setInterval(pendingReward, 10000);
 }
 async function transferOwnership(newOwner){
@@ -99,4 +106,35 @@ async function tokenURI(){
     const tokenURIInput = $('#tokenURIInput').val();
     const tokenURI = await main.methods.tokenURI(tokenURIInput).call();
     $('#tokenURI').html(tokenURI);
+}
+
+async function mintPresale(){
+    const val = $('#inputPresale').val();
+    const tx = await main.methods.mintPresale(val).send({from: account, value: PRESALE_PRICE});
+    $('#tx').html(tx.transactionHash);
+    await loadLastMintedNft();
+}
+
+async function mintPublic(){
+    const val = $('#inputSale').val();
+    const tx = await main.methods.mintPublic(val).send({from: account, value: PUBLIC_SALE_PRICE});
+    $('#tx').html(tx.transactionHash);
+    await loadLastMintedNft();
+}
+async function loadLastMintedNft(){
+    let balanceOf = await main.methods.balanceOf(account).call();
+    console.log('balanceOf', balanceOf);
+    if( balanceOf == 0 ) return;
+    --balanceOf;
+    const tokenOfOwnerByIndex = await main.methods.tokenOfOwnerByIndex(account, balanceOf).call();
+    const tokenURI = await main.methods.tokenURI(tokenOfOwnerByIndex).call();
+    console.log('tokenURI', tokenURI);
+    $.get(tokenURI, function(str){
+        const r = JSON.parse(str);
+        const name = r.name;
+        const image = r.image;
+        const html = `<h3 class="text-primary">${name}</h3><img src="${image}" height="480" class="shadow-lg  mb-5 bg-body rounded" />`;
+        $('#tokenOfOwnerByIndex').html(html);
+    });
+
 }

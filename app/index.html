@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sample Site</title>
+    <title>Zogue</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -17,11 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/keccak256@1.0.6/keccak256.js"></script>
     <script src="abi-main.js"></script>
     <script src="main.js"></script>
-    <script>
-        // testnet bsc
-        const mainAddress = '0x95B7FB1da941B6FD1952D85f2d762F11CB00E856';
-        let web3, account, main;
-    </script>
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
@@ -109,21 +104,40 @@
                 </p>
                 <p>
 
-                <div id="PRESALE_ACTIVE">
-                    <input class=" shadow" type="text" value="1" style="width: 90px; text-align: center;"
-                           placeholder="Amount" aria-label=".form-control-lg example">
-                    <a href="#" class="btn-sm btn-secondary my-2 buy-btn shadow" style="width: 90px"
-                    >Buy from pre-sale</a>
-                    <div class="text-light">Mint price: <span id="PRESALE_PRICE">-</span></div>
+                <div class="row text-secondary">
+                    <div class="col">
+                        Presale mint
+                    </div>
+                    <div class="col">
+                        Public sale
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div id="PRESALE_ACTIVE">
+                            <input class=" shadow" type="text" value="1" style="width: 90px; text-align: center;"
+                                   placeholder="Amount" aria-label=".form-control-lg example" id="inputPresale">
+                            <a href="#" class="btn-sm btn-secondary my-2 buy-btn shadow" style="width: 90px"
+                               onclick="mintPresale(); return false;">Buy from pre-sale</a>
+                            <div class="text-light">Mint price: <span id="PRESALE_PRICE">-</span></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div id="SALE_ACTIVE">
+                            <input class=" shadow" type="text" value="1" style="width: 90px; text-align: center;"
+                                   placeholder="Amount" aria-label=".form-control-lg example" id="inputSale">
+                            <a href="#" class="btn-sm btn-secondary my-2 buy-btn shadow" style="width: 90px"
+                               onclick="mintPublic(); return false;">Buy from public sale</a>
+                            <div class="text-light">Mint price: <span id="PUBLIC_SALE_PRICE">-</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col" id="tokenOfOwnerByIndex">
+                        tokenOfOwnerByIndex
+                    </div>
                 </div>
 
-                <div id="SALE_ACTIVE">
-                    <input class=" shadow" type="text" value="1" style="width: 90px; text-align: center;"
-                           placeholder="Amount" aria-label=".form-control-lg example">
-                    <a href="#" class="btn-sm btn-secondary my-2 buy-btn shadow" style="width: 90px"
-                    >Buy from public sale</a>
-                    <div class="text-light">Mint price: <span id="PUBLIC_SALE_PRICE">-</span></div>
-                </div>
 
                 </p>
             </div>
