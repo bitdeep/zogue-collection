@@ -12,18 +12,39 @@ function fromWei(v) {
 function toWei(v) {
     return web3.utils.toWei(v);
 }
-async function accountLoad() {
-    if (window.ethereum) {
-        const r = await window.ethereum.request({method: 'eth_requestAccounts'});
-        web3 = new Web3(window.ethereum);
-        account = r[0];
-        return true;
-    }
-    return false;
+let Web3Modal, web3Modal, provider;
+async function onLoad(){
+    const providerOptions = {};
+    Web3Modal = window.Web3Modal.default;
+    web3Modal = new Web3Modal({
+        cacheProvider: true,
+        providerOptions,
+        disableInjectedProvider: false
+    });
+    provider = await web3Modal.connect();
+    provider.on("accountsChanged", (accounts) => {
+        console.log("accountsChanged", accounts);
+        load(provider);
+    });
+    provider.on("chainChanged", (chainId) => {
+        console.log("chainChanged", chainId);
+        load(provider);
+    });
+    provider.on("connect", (info) => {
+        console.log("connect", info);
+        load(provider);
+    });
+    provider.on("disconnect", (error) => {
+        console.log("disconnect", error);
+        alert(error.message);
+    });
+
+    load(provider);
+    // setInterval(pendingReward, 10000);
 }
 
-async function load() {
-    const enabled = await accountLoad();
+async function load(provider) {
+    const enabled = await accountLoad(provider);
     if (enabled) {
         $('#WALLET').html(account);
         main = new web3.eth.Contract(abi_main, mainAddress);
@@ -32,6 +53,17 @@ async function load() {
         alert('no web3 connection');
     }
 }
+
+async function accountLoad(provider) {
+    if (provider) {
+        const r = await provider.request({method: 'eth_requestAccounts'});
+        web3 = new Web3(provider);
+        account = r[0];
+        return true;
+    }
+    return false;
+}
+
 
 async function contractStats(){
     const PRESALE_ACTIVE = await main.methods.PRESALE_ACTIVE().call();
@@ -70,11 +102,7 @@ async function contractStats(){
 
 }
 
-async function onLoad(){
-    load();
 
-    // setInterval(pendingReward, 10000);
-}
 async function transferOwnership(newOwner){
     const tx = await admin.methods.transferOwnership(newOwner).send({from: account});
     $('#tx').html(tx.transactionHash);
