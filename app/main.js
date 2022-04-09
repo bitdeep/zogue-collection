@@ -5,6 +5,8 @@ let web3, account, main;
 // hold both prices of a public and whitelisted mint
 let PRESALE_PRICE,
     PUBLIC_SALE_PRICE;
+let PRESALE_ACTIVE,
+    SALE_ACTIVE;
 
 function fromWei(v) {
     return web3.utils.fromWei(v);
@@ -16,11 +18,7 @@ let Web3Modal, web3Modal, provider;
 async function onLoad(){
     const providerOptions = {};
     Web3Modal = window.Web3Modal.default;
-    web3Modal = new Web3Modal({
-        cacheProvider: true,
-        providerOptions,
-        disableInjectedProvider: false
-    });
+    web3Modal = new Web3Modal({});
     provider = await web3Modal.connect();
     provider.on("accountsChanged", (accounts) => {
         console.log("accountsChanged", accounts);
@@ -64,13 +62,18 @@ async function accountLoad(provider) {
     return false;
 }
 
-
+let presaleWhitelist;
 async function contractStats(){
-    const PRESALE_ACTIVE = await main.methods.PRESALE_ACTIVE().call();
-    $('#PRESALE_ACTIVE').css('display', PRESALE_ACTIVE?'':'none');
 
-    const SALE_ACTIVE = await main.methods.SALE_ACTIVE().call();
-    $('#SALE_ACTIVE').css('display', SALE_ACTIVE?'':'none');
+    presaleWhitelist = await main.methods.presaleWhitelist(account).call();
+
+    if( presaleWhitelist ){
+        PRESALE_ACTIVE = await main.methods.PRESALE_ACTIVE().call();
+        $('#PRESALE_ACTIVE').css('display', PRESALE_ACTIVE?'':'none');
+    }else {
+        SALE_ACTIVE = await main.methods.SALE_ACTIVE().call();
+        $('#SALE_ACTIVE').css('display', SALE_ACTIVE ? '' : 'none');
+    }
 
     PRESALE_PRICE = await main.methods.PRESALE_PRICE().call();
     $('#PRESALE_PRICE').html(PRESALE_PRICE/1e18);
@@ -78,56 +81,10 @@ async function contractStats(){
     PUBLIC_SALE_PRICE = await main.methods.PUBLIC_SALE_PRICE().call();
     $('#PUBLIC_SALE_PRICE').html(PUBLIC_SALE_PRICE/1e18);
 
-    /*
 
-    const name = await main.methods.name().call();
-    $('#name').html(name);
-
-    const symbol = await main.methods.symbol().call();
-    $('#symbol').html(symbol);
-
-    const FEE_RECIPIENT = await main.methods.FEE_RECIPIENT().call();
-    $('#FEE_RECIPIENT').html(FEE_RECIPIENT);
-
-    const totalSupply = await main.methods.totalSupply().call();
-    $('#totalSupply').html(totalSupply);
-
-    const accountWhitelisted = await main.methods.presaleWhitelist(account).call();
-    $('#accountWhitelisted').html(accountWhitelisted?'Yes':'No');
-
-    $('#minterAddress').val(account);
-    */
 
     loadLastMintedNft();
 
-}
-
-
-async function transferOwnership(newOwner){
-    const tx = await admin.methods.transferOwnership(newOwner).send({from: account});
-    $('#tx').html(tx.transactionHash);
-    await load();
-}
-
-async function mintPresale(){
-    const numberOfTokens = $('#numberOfTokensPreSale').val();
-    const tx = await main.methods.mintPresale(numberOfTokens).send({from: account, value: PRESALE_PRICE});
-    $('#tx').html(tx.transactionHash);
-    await load();
-}
-
-async function mintPublic(){
-    const numberOfTokens = $('#numberOfTokensPublic').val();
-    const tx = await main.methods.mintPublic(numberOfTokens).send({from: account, value: PUBLIC_SALE_PRICE});
-    $('#tx').html(tx.transactionHash);
-    await load();
-}
-
-async function setWhitelist(){
-    const minterAddress = $('#minterAddress').val();
-    const tx = await main.methods.setWhitelist(minterAddress, true).send({from: account});
-    $('#tx').html(tx.transactionHash);
-    await load();
 }
 
 async function tokenURI(){

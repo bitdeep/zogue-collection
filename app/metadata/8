@@ -1,0 +1,52 @@
+{
+  "name": "Zogue #1",
+  "file": "1.png",
+  "description": "description",
+  "image": "https://zogue-collection.pages.dev/metadata/1.png",
+  "attributes": [
+    {
+      "trait_type": "BACKGROUND",
+      "value": "Neon"
+    },
+    {
+      "trait_type": "SKIN",
+      "value": "Silver"
+    },
+    {
+      "trait_type": "SHIRTS",
+      "value": "Chicago"
+    },
+    {
+      "trait_type": "EARS",
+      "value": "Chirst"
+    },
+    {
+      "trait_type": "HEAD",
+      "value": "Punk"
+    },
+    {
+      "trait_type": "EYES",
+      "value": "Death"
+    },
+    {
+      "trait_type": "HORNS",
+      "value": "Silver"
+    },
+    {
+      "trait_type": "LOGO",
+      "value": "Common"
+    },
+    {
+      "trait_type": "SNOUT",
+      "value": "Empty"
+    },
+    {
+      "trait_type": "TATOOS",
+      "value": "Bull"
+    },
+    {
+      "trait_type": "COLLAR",
+      "value": "Fit"
+    }
+  ]
+}
