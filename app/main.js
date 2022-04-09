@@ -64,8 +64,12 @@ async function accountLoad(provider) {
 
 let presaleWhitelist;
 async function contractStats(){
-
-    presaleWhitelist = await main.methods.presaleWhitelist(account).call();
+    try {
+        presaleWhitelist = await main.methods.presaleWhitelist(account).call();
+    }catch(e){
+        alert('ERROR: CHANGE YOUR NETWORK TO BSC TESTNET.');
+        return;
+    }
 
     if( presaleWhitelist ){
         PRESALE_ACTIVE = await main.methods.PRESALE_ACTIVE().call();
