@@ -23,6 +23,7 @@ function App() {
     const [saleActive, setSaleActive] = useState(false);
     const [presaleWhitelist, setPresaleWhitelist] = useState(false);
     const [lastMint, setLastMint] = useState('');
+    const [weiPrice, setWeiPrice] = useState(0);
 
     const checkWalletIsConnected = async () => {
         ethereum = await getweb3();
@@ -42,23 +43,25 @@ function App() {
 
             try {
                 main = new web3.eth.Contract(abi, contractAddress);
-                setPresaleWhitelist( await main.methods.presaleWhitelist(account).call() );
+                setPresaleWhitelist(await main.methods.presaleWhitelist(account).call());
 
-                setTotalSupply( await main.methods.totalSupply().call() ) ;
+                setTotalSupply(await main.methods.totalSupply().call());
 
-                setSaleActive( await main.methods.SALE_ACTIVE().call() ) ;
+                setSaleActive(await main.methods.SALE_ACTIVE().call());
                 let price = await main.methods.PUBLIC_SALE_PRICE().call();
-                setCurrentPrice(price/1e18);
+                setWeiPrice(price);
+                setCurrentPrice(price / 1e18);
                 setMintAlert('You are NOT whitelisted. Minting from public sale.');
                 setPresaleActive(await main.methods.PRESALE_ACTIVE().call());
 
-                if( presaleWhitelist && presaleActive ){
+                if (presaleWhitelist && presaleActive) {
                     price = await main.methods.PRESALE_PRICE().call();
-                    setCurrentPrice(price/1e18);
+                    setWeiPrice(price);
+                    setCurrentPrice(price / 1e18);
                     setMintAlert('You are whitelisted.');
                 }
-                console.log('PRESALE_ACTIVE', presaleActive );
-                console.log('SALE_ACTIVE', saleActive );
+                console.log('PRESALE_ACTIVE', presaleActive);
+                console.log('SALE_ACTIVE', saleActive);
                 // loadLastMintedNft();
 
             } catch (err) {
@@ -73,36 +76,55 @@ function App() {
 
     const mintNftHandler = async () => {
         let price = currentPrice;
-        console.log('PRESALE_ACTIVE', presaleActive );
-        console.log('SALE_ACTIVE', saleActive );
-        if( ! presaleActive && ! saleActive ){
+        console.log('PRESALE_ACTIVE', presaleActive);
+        console.log('SALE_ACTIVE', saleActive);
+        if (!presaleActive && !saleActive) {
             setMintAlert('Mint is disabled.');
             return;
         }
         let tx;
-        const args = {from: account, value: price};
+        const totalPrice = weiPrice * mintAmount;
+        const args = {from: account, value: totalPrice};
         console.log('mintAmount', mintAmount);
-        if( presaleWhitelist ){
-            tx = await main.methods.mintPresale(mintAmount).send(args);
-        }else{
-            tx = await main.methods.mintPublic(mintAmount).send(args);
+        if (presaleWhitelist && presaleActive ) {
+            await main.methods.mintPresale(mintAmount)
+                .estimateGas(args, async function (err, res) {
+                    if (err) {
+                        alert(err.toString());
+                    } else {
+                        tx = await main.methods.mintPresale(mintAmount).send(args);
+                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
+                        loadLastMintedNft();
+                    }
+                });
+
+        } else {
+            await main.methods.mintPublic(mintAmount)
+                .estimateGas(args, async function (err, res) {
+                    if (err) {
+                        alert(err.toString());
+                    } else {
+                        tx = await main.methods.mintPublic(mintAmount).send(args);
+                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
+                        loadLastMintedNft();
+                    }
+                });
         }
-        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
-        loadLastMintedNft();
+
     }
 
     const loadLastMintedNft = async () => {
         let balanceOf = await main.methods.balanceOf(account).call();
         console.log('balanceOf', balanceOf);
-        if( balanceOf == 0 ) return;
+        if (balanceOf == 0) return;
         --balanceOf;
         const tokenOfOwnerByIndex = await main.methods.tokenOfOwnerByIndex(account, balanceOf).call();
         let tokenURI = await main.methods.tokenURI(tokenOfOwnerByIndex).call();
-            tokenURI = 'http://localhost:3000/metadata/0?0';
+        tokenURI = 'http://localhost:3000/metadata/0?0';
         console.log('tokenURI', tokenURI);
-        const res = await fetch(tokenURI, {crossDomain:true});
+        const res = await fetch(tokenURI, {crossDomain: true});
         const r = await res.json();
-        setLastMint( (<img src={r.image}/> ) );
+        setLastMint((<img src={r.image}/>));
         // console.log(r);
     }
 
@@ -141,7 +163,7 @@ function App() {
         return (
             <>
                 <input id="inputAmount" className='input-button' defaultValue={1} type="number"
-                onChange={setAmount}/>
+                       onChange={setAmount}/>
                 <br/><br/>
                 <button onClick={mintNftHandler} className='cta-button mint-nft-button'>
                     Mint NFT
