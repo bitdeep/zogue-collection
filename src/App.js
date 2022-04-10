@@ -120,7 +120,7 @@ function App() {
         --balanceOf;
         const tokenOfOwnerByIndex = await main.methods.tokenOfOwnerByIndex(account, balanceOf).call();
         let tokenURI = await main.methods.tokenURI(tokenOfOwnerByIndex).call();
-        tokenURI = 'http://localhost:3000/metadata/0?0';
+        // tokenURI = 'http://localhost:3000/metadata/0?0';
         console.log('tokenURI', tokenURI);
         const res = await fetch(tokenURI, {crossDomain: true});
         const r = await res.json();
