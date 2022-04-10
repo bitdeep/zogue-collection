@@ -40,3 +40,6 @@ body{
     font-family: Verdana;
     font-size: 10px;
 }
+.padded{
+    padding:10px;
+}

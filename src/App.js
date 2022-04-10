@@ -124,7 +124,11 @@ function App() {
         console.log('tokenURI', tokenURI);
         const res = await fetch(tokenURI, {crossDomain: true});
         const r = await res.json();
-        setLastMint((<img src={r.image}/>));
+        setLastMint((
+            <>
+                <img src={r.image} width={220}/>
+            </>
+        ));
         // console.log(r);
     }
 
