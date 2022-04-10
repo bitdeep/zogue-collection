@@ -82,7 +82,6 @@ function App() {
         let tx;
         const args = {from: account, value: price};
         console.log('mintAmount', mintAmount);
-        return;
         if( presaleWhitelist ){
             tx = await main.methods.mintPresale(mintAmount).send(args);
         }else{
