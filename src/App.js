@@ -22,6 +22,7 @@ function App() {
     const [presaleActive, setPresaleActive] = useState(false);
     const [saleActive, setSaleActive] = useState(false);
     const [presaleWhitelist, setPresaleWhitelist] = useState(false);
+    const [lastMint, setLastMint] = useState('');
 
     const checkWalletIsConnected = async () => {
         ethereum = await getweb3();
@@ -58,7 +59,7 @@ function App() {
                 }
                 console.log('PRESALE_ACTIVE', presaleActive );
                 console.log('SALE_ACTIVE', saleActive );
-                loadLastMintedNft();
+                // loadLastMintedNft();
 
             } catch (err) {
                 alert('ERROR: CHANGE YOUR NETWORK TO BSC TESTNET.');
@@ -87,8 +88,8 @@ function App() {
         }else{
             tx = await main.methods.mintPublic(mintAmount).send(args);
         }
-        setMintAlert(tx.transactionHash);
-        setMintAlert('Mint completed. Thank you.');
+        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
+        loadLastMintedNft();
     }
 
     const loadLastMintedNft = async () => {
@@ -97,11 +98,13 @@ function App() {
         if( balanceOf == 0 ) return;
         --balanceOf;
         const tokenOfOwnerByIndex = await main.methods.tokenOfOwnerByIndex(account, balanceOf).call();
-        const tokenURI = await main.methods.tokenURI(tokenOfOwnerByIndex).call();
+        let tokenURI = await main.methods.tokenURI(tokenOfOwnerByIndex).call();
+            tokenURI = 'http://localhost:3000/metadata/0?0';
         console.log('tokenURI', tokenURI);
         const res = await fetch(tokenURI, {crossDomain:true});
-        // const r = await res.json();
-        console.log(res);
+        const r = await res.json();
+        setLastMint( (<img src={r.image}/> ) );
+        // console.log(r);
     }
 
     const connectWalletHandler = async () => {
@@ -152,6 +155,9 @@ function App() {
                 </div>
                 <div className="small">
                     {mintAlert}
+                </div>
+                <div className="small">
+                    {lastMint}
                 </div>
             </>
         )
