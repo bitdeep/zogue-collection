@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react';
 import './App.css';
 import contract from './contracts/NFTCollectible.json';
-import {ethers} from 'ethers';
 import logo from './logo.png'
 
 import Web3 from "web3";
@@ -9,13 +8,20 @@ import Web3Modal from "web3modal";
 import Authereum from "authereum";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
-const contractAddress = "0x355638a4eCcb777794257f22f50c289d4189F245";
+const contractAddress = "0x95B7FB1da941B6FD1952D85f2d762F11CB00E856";
 const abi = contract.abi;
-let web3, ethereum;
+let web3, ethereum, account, main;
 
 function App() {
 
     const [currentAccount, setCurrentAccount] = useState(null);
+    const [currentPrice, setCurrentPrice] = useState(0);
+    const [totalSupply, setTotalSupply] = useState(0);
+    const [mintAlert, setMintAlert] = useState('');
+    const [mintAmount, setMintAmount] = useState(1);
+    const [presaleActive, setPresaleActive] = useState(false);
+    const [saleActive, setSaleActive] = useState(false);
+    const [presaleWhitelist, setPresaleWhitelist] = useState(false);
 
     const checkWalletIsConnected = async () => {
         ethereum = await getweb3();
@@ -29,12 +35,73 @@ function App() {
         const accounts = await ethereum.request({method: 'eth_accounts'});
 
         if (accounts.length !== 0) {
-            const account = accounts[0];
+            account = accounts[0];
             console.log("Found an authorized account: ", account);
             setCurrentAccount(account);
+
+            try {
+                main = new web3.eth.Contract(abi, contractAddress);
+                setPresaleWhitelist( await main.methods.presaleWhitelist(account).call() );
+
+                setTotalSupply( await main.methods.totalSupply().call() ) ;
+
+                setSaleActive( await main.methods.SALE_ACTIVE().call() ) ;
+                let price = await main.methods.PUBLIC_SALE_PRICE().call();
+                setCurrentPrice(price/1e18);
+                setMintAlert('You are NOT whitelisted. Minting from public sale.');
+                setPresaleActive(await main.methods.PRESALE_ACTIVE().call());
+
+                if( presaleWhitelist && presaleActive ){
+                    price = await main.methods.PRESALE_PRICE().call();
+                    setCurrentPrice(price/1e18);
+                    setMintAlert('You are whitelisted.');
+                }
+                console.log('PRESALE_ACTIVE', presaleActive );
+                console.log('SALE_ACTIVE', saleActive );
+                loadLastMintedNft();
+
+            } catch (err) {
+                alert('ERROR: CHANGE YOUR NETWORK TO BSC TESTNET.');
+                console.log(err.toString());
+            }
+
         } else {
             console.log("No authorized account found");
         }
+    }
+
+    const mintNftHandler = async () => {
+        let price = currentPrice;
+        console.log('PRESALE_ACTIVE', presaleActive );
+        console.log('SALE_ACTIVE', saleActive );
+        if( ! presaleActive && ! saleActive ){
+            setMintAlert('Mint is disabled.');
+            return;
+        }
+        let tx;
+        const args = {from: account, value: price};
+        console.log('mintAmount', mintAmount);
+        return;
+        if( presaleWhitelist ){
+            tx = await main.methods.mintPresale(mintAmount).send(args);
+        }else{
+            tx = await main.methods.mintPublic(mintAmount).send(args);
+        }
+        setMintAlert(tx.transactionHash);
+        setMintAlert('Mint completed. Thank you.');
+    }
+
+    const loadLastMintedNft = async () => {
+        let balanceOf = await main.methods.balanceOf(account).call();
+        console.log('balanceOf', balanceOf);
+        if( balanceOf == 0 ) return;
+        --balanceOf;
+        const tokenOfOwnerByIndex = await main.methods.tokenOfOwnerByIndex(account, balanceOf).call();
+        const tokenURI = await main.methods.tokenURI(tokenOfOwnerByIndex).call();
+        console.log('tokenURI', tokenURI);
+        const res = await fetch(tokenURI, {crossDomain:true});
+        // const r = await res.json();
+        console.log(res);
     }
 
     const connectWalletHandler = async () => {
@@ -53,30 +120,6 @@ function App() {
         }
     }
 
-    const mintNftHandler = async () => {
-        try {
-
-            if (ethereum) {
-                const provider = new ethers.providers.Web3Provider(ethereum);
-                const signer = provider.getSigner();
-                const nftContract = new ethers.Contract(contractAddress, abi, signer);
-
-                console.log("Initialize payment");
-                let nftTxn = await nftContract.mintNFTs(1, {value: ethers.utils.parseEther("0.01")});
-
-                console.log("Mining... please wait");
-                await nftTxn.wait();
-
-                console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
-
-            } else {
-                console.log("Ethereum object does not exist");
-            }
-
-        } catch (err) {
-            console.log(err);
-        }
-    }
 
     const connectWalletButton = () => {
         return (
@@ -88,14 +131,28 @@ function App() {
         )
     }
 
+    const setAmount = (e) => {
+        setMintAmount(e.target.value)
+    }
+
     const mintNftButton = () => {
         return (
             <>
-                <input className='input-button' defaultValue={1} type="number"/>
+                <input id="inputAmount" className='input-button' defaultValue={1} type="number"
+                onChange={setAmount}/>
                 <br/><br/>
                 <button onClick={mintNftHandler} className='cta-button mint-nft-button'>
                     Mint NFT
                 </button>
+                <div className="small">
+                    <span>Mint price: {currentPrice} ETH</span>
+                </div>
+                <div className="small">
+                    <span>Total minted: {totalSupply}</span>
+                </div>
+                <div className="small">
+                    {mintAlert}
+                </div>
             </>
         )
     }
@@ -115,7 +172,6 @@ function App() {
                 package: WalletConnectProvider, // required
                 options: {
                     infuraId: "INFURA_ID", // Required
-                    network: "rinkeby",
                     qrcodeModalOptions: {
                         mobileLinks: [
                             "rainbow",
@@ -133,7 +189,7 @@ function App() {
             },
         };
         web3Modal = new Web3Modal({
-            network: "rinkeby",
+            network: "",
             cacheProvider: true,
             providerOptions
         });

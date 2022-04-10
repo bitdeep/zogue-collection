@@ -36,3 +36,7 @@ body{
     border:1px solid #fff;
     background: #36004F;
 }
+.small{
+    font-family: Verdana;
+    font-size: 10px;
+}
