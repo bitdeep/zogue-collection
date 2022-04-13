@@ -2,11 +2,12 @@ import {useEffect, useState} from 'react';
 import './App.css';
 import contract from './contracts/NFTCollectible.json';
 import logo from './logo.png'
-
 import Web3 from "web3";
 import Web3Modal from "web3modal";
 import Authereum from "authereum";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+
+import {Container, Row, Col} from "react-bootstrap";
 
 const contractAddress = "0x95B7FB1da941B6FD1952D85f2d762F11CB00E856";
 const abi = contract.abi;
@@ -22,7 +23,7 @@ function App() {
     const [presaleActive, setPresaleActive] = useState(false);
     const [saleActive, setSaleActive] = useState(false);
     const [presaleWhitelist, setPresaleWhitelist] = useState(false);
-    const [lastMint, setLastMint] = useState('');
+    const [lastMint, setLastMint] = useState(logo);
     const [weiPrice, setWeiPrice] = useState(0);
 
     const checkWalletIsConnected = async () => {
@@ -86,7 +87,7 @@ function App() {
         const totalPrice = weiPrice * mintAmount;
         const args = {from: account, value: totalPrice};
         console.log('mintAmount', mintAmount);
-        if (presaleWhitelist && presaleActive ) {
+        if (presaleWhitelist && presaleActive) {
             await main.methods.mintPresale(mintAmount)
                 .estimateGas(args, async function (err, res) {
                     if (err) {
@@ -124,11 +125,7 @@ function App() {
         console.log('tokenURI', tokenURI);
         const res = await fetch(tokenURI, {crossDomain: true});
         const r = await res.json();
-        setLastMint((
-            <>
-                <img src={r.image} width={220}/>
-            </>
-        ));
+        setLastMint(r.image);
         // console.log(r);
     }
 
@@ -166,24 +163,23 @@ function App() {
     const mintNftButton = () => {
         return (
             <>
-                <input id="inputAmount" className='input-button' defaultValue={1} type="number"
-                       onChange={setAmount}/>
-                <br/><br/>
-                <button onClick={mintNftHandler} className='cta-button mint-nft-button'>
-                    Mint NFT
-                </button>
+                <div className="small">
+                    {mintAlert}
+                </div>
+                <hr/>
                 <div className="small">
                     <span>Mint price: {currentPrice} ETH</span>
                 </div>
                 <div className="small">
                     <span>Total minted: {totalSupply}</span>
                 </div>
-                <div className="small">
-                    {mintAlert}
-                </div>
-                <div className="small">
-                    {lastMint}
-                </div>
+                <hr/>
+                <input id="inputAmount" className='input-button' defaultValue={1} type="number"
+                       onChange={setAmount}/>
+                <br/><br/>
+                <button onClick={mintNftHandler} className='cta-button mint-nft-button'>
+                    Mint NFT
+                </button>
             </>
         )
     }
@@ -244,13 +240,28 @@ function App() {
     }, [])
 
     return (
-        <div className='main-app'>
-            <img src={logo} height={220}/>
-            <h1>Zogue</h1>
+        <Row className='main-body'>
             <div>
-                {currentAccount ? mintNftButton() : connectWalletButton()}
+                <h1>Zogue</h1>
             </div>
-        </div>
+            <Row className="main-area">
+                <Col></Col>
+                <Col>
+                    <div className='main-app rounded shadow-lg'>
+                        <Row>
+                            <Col>
+                                {currentAccount ? mintNftButton() : connectWalletButton()}
+                            </Col>
+                            <Col>
+                                <img src={lastMint} height={220}
+                                     className='rounded shadow-lg'/>
+                            </Col>
+                        </Row>
+                    </div>
+                </Col>
+                <Col></Col>
+            </Row>
+        </Row>
     )
 }
 

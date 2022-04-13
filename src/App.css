@@ -1,23 +1,43 @@
-body{
+body {
     background-color: #36004F;
-    color:#fff;
+    color: #fff;
+    background-image: url('bg.png');
 }
-.main-app {
+
+.main-body {
     text-align: center;
+    align-items: center;
+    border: 0px solid red;
     margin-top: 100px;
 }
-.input-button{
-    padding: 15px;
+
+.main-area {
+    text-align: center;
+    border: 0px solid green;
+}
+
+.main-app {
+    text-align: center;
+    background-color: #36004F;
+    width: 520px;
+    border: 0px solid blue;
+    padding: 20px;
+}
+
+.input-button {
+    padding: 5px;
     border: none;
     border-radius: 12px;
-    width: 50px;
+    width: 70px;
     color: white;
     cursor: pointer;
     background-color: #36004F;
-    border:1px solid #fff;
+    border: 1px solid #fff;
+    text-align: center;
 }
+
 .cta-button {
-    padding: 15px;
+    padding: 5px;
     border: none;
     border-radius: 12px;
     min-width: 120px;
@@ -28,18 +48,20 @@ body{
 }
 
 .connect-wallet-button {
-    border:1px solid #fff;
+    border: 1px solid #fff;
     background: #36004F;
 }
 
 .mint-nft-button {
-    border:1px solid #fff;
+    border: 1px solid #fff;
     background: #36004F;
 }
-.small{
+
+.small {
     font-family: Verdana;
     font-size: 10px;
 }
-.padded{
-    padding:10px;
+
+.padded {
+    padding: 10px;
 }
