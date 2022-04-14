@@ -17,6 +17,7 @@ function App() {
 
     const [currentAccount, setCurrentAccount] = useState(null);
     const [currentPrice, setCurrentPrice] = useState(0);
+    const [displayPrice, setDisplayPrice] = useState(0);
     const [totalSupply, setTotalSupply] = useState(0);
     const [mintAlert, setMintAlert] = useState('');
     const [mintAmount, setMintAmount] = useState(1);
@@ -25,6 +26,7 @@ function App() {
     const [presaleWhitelist, setPresaleWhitelist] = useState(false);
     const [lastMint, setLastMint] = useState(logo);
     const [weiPrice, setWeiPrice] = useState(0);
+    const [TOTAL_SUPPLY, setTOTAL_SUPPLY] = useState(0);
 
     const checkWalletIsConnected = async () => {
         ethereum = await getweb3();
@@ -47,18 +49,23 @@ function App() {
                 setPresaleWhitelist(await main.methods.presaleWhitelist(account).call());
 
                 setTotalSupply(await main.methods.totalSupply().call());
+                setTOTAL_SUPPLY(await main.methods.TOTAL_SUPPLY().call());
 
                 setSaleActive(await main.methods.SALE_ACTIVE().call());
                 let price = await main.methods.PUBLIC_SALE_PRICE().call();
                 setWeiPrice(price);
-                setCurrentPrice(price / 1e18);
+                const _price = parseFloat(price / 1e18).toFixed(4);
+                setCurrentPrice(_price);
+                setDisplayPrice(_price);
                 setMintAlert('You are NOT whitelisted. Minting from public sale.');
                 setPresaleActive(await main.methods.PRESALE_ACTIVE().call());
 
                 if (presaleWhitelist && presaleActive) {
                     price = await main.methods.PRESALE_PRICE().call();
-                    setWeiPrice(price);
-                    setCurrentPrice(price / 1e18);
+                    const _price = parseFloat(price / 1e18).toFixed(4);
+                    setWeiPrice(_price);
+                    setCurrentPrice(_price);
+                    setDisplayPrice(_price);
                     setMintAlert('You are whitelisted.');
                 }
                 console.log('PRESALE_ACTIVE', presaleActive);
@@ -157,29 +164,65 @@ function App() {
     }
 
     const setAmount = (e) => {
-        setMintAmount(e.target.value)
+        const amount = e.target.value;
+        _setAmount(amount);
     }
-
+    function _setAmount(amount){
+        setMintAmount(amount)
+        const total = parseFloat(currentPrice * amount).toFixed(4)
+        setDisplayPrice(total);
+    }
+    function setAmountLess(){
+        let amount = mintAmount;
+        if( amount > 1 ) amount--;
+        document.getElementById('inputAmount').value = amount;
+        _setAmount(amount)
+    }
+    function setAmountPlus(){
+        let amount = mintAmount;
+        amount++;
+        document.getElementById('inputAmount').value = amount;
+        _setAmount(amount)
+    }
     const mintNftButton = () => {
         return (
             <>
-                <div className="small">
+                <div className="mint-status rounded shadow small p-1">
                     {mintAlert}
                 </div>
-                <hr/>
-                <div className="small">
-                    <span>Mint price: {currentPrice} ETH</span>
-                </div>
-                <div className="small">
-                    <span>Total minted: {totalSupply}</span>
-                </div>
-                <hr/>
-                <input id="inputAmount" className='input-button' defaultValue={1} type="number"
-                       onChange={setAmount}/>
-                <br/><br/>
-                <button onClick={mintNftHandler} className='cta-button mint-nft-button'>
-                    Mint NFT
-                </button>
+                <Row className=" p-1">
+                    <h3>BECOME A ZOGUER</h3>
+                </Row>
+
+                <Row className="border-top p-1">
+                    <Col>AMOUNT</Col>
+                    <Col>
+                        <Row>
+                            <input className='input-sig-button' defaultValue="-" type="button"
+                                   onClick={setAmountLess}/>
+                            <input id="inputAmount" className='input-button' defaultValue={1} type="number"
+                                   onChange={setAmount}/>
+                            <input className='input-sig-button' defaultValue="+" type="button"
+                                   onClick={setAmountPlus}/>
+                        </Row>
+                    </Col>
+                </Row>
+                <Row className="border-top p-1">
+                    <Col>Total</Col>
+                    <Col>{displayPrice} ETH</Col>
+                </Row>
+                <Row className="border-top p-1">
+                    <Col>Zoguer's Scouted</Col>
+                    <Col>{totalSupply}/{TOTAL_SUPPLY}</Col>
+                </Row>
+                <Row className="p-3">
+                    <button onClick={mintNftHandler} className='cta-button mint-nft-button rounded shadow p-1'>
+                        Mint Now
+                    </button>
+                </Row>
+                <Row>
+                    <Col className="small p-1">{currentAccount}</Col>
+                </Row>
             </>
         )
     }
@@ -253,7 +296,7 @@ function App() {
                                 {currentAccount ? mintNftButton() : connectWalletButton()}
                             </Col>
                             <Col>
-                                <img src={lastMint} height={220}
+                                <img src={lastMint} height={280}
                                      className='rounded shadow-lg'/>
                             </Col>
                         </Row>

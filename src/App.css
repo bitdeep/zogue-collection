@@ -19,27 +19,32 @@ body {
 .main-app {
     text-align: center;
     background-color: #36004F;
-    width: 520px;
+    width: 640px;
     border: 0px solid blue;
     padding: 20px;
 }
 
 .input-button {
-    padding: 5px;
+    margin-left:20px;
     border: none;
-    border-radius: 12px;
-    width: 70px;
+    width: 60px;
     color: white;
     cursor: pointer;
     background-color: #36004F;
-    border: 1px solid #fff;
-    text-align: center;
+    border: 0px dotted #eee;
+    text-align: left;
+    font-weight: bold;
 }
-
+.input-sig-button{
+    max-width: 20px;
+    text-align: center;
+    border:0px;
+    background-color: #36004F;
+    color:#fff;
+}
 .cta-button {
     padding: 5px;
     border: none;
-    border-radius: 12px;
     min-width: 120px;
     color: white;
     font-size: 18px;
@@ -53,8 +58,9 @@ body {
 }
 
 .mint-nft-button {
-    border: 1px solid #fff;
-    background: #36004F;
+    margin-top:10px;
+    border: 0px solid #fff;
+    background-color: blueviolet;
 }
 
 .small {
@@ -65,3 +71,9 @@ body {
 .padded {
     padding: 10px;
 }
+
+.mint-status{
+    background-color:blueviolet;
+    color:blanchedalmond;
+}
+
