@@ -8,8 +8,8 @@ import Authereum from "authereum";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import {Container, Row, Col} from "react-bootstrap";
-
-const contractAddress = "0x95B7FB1da941B6FD1952D85f2d762F11CB00E856";
+// 0x95B7FB1da941B6FD1952D85f2d762F11CB00E856 bsc testnet
+const contractAddress = "0xe87ea3831bee4F54349d9B4a0b0e60a6382FE32d";
 const abi = contract.abi;
 let web3, ethereum, account, main;
 
@@ -73,7 +73,7 @@ function App() {
                 // loadLastMintedNft();
 
             } catch (err) {
-                alert('ERROR: CHANGE YOUR NETWORK TO BSC TESTNET.');
+                alert('ERROR: CHANGE YOUR NETWORK TO ROPSTEN.');
                 console.log(err.toString());
             }
 
@@ -199,8 +199,8 @@ function App() {
                 </Row>
 
                 <Row className="border-top p-1">
-                    <Col>AMOUNT</Col>
-                    <Col>
+                    <Col className="text-lg-end">AMOUNT</Col>
+                    <Col className="text-lg-start">
                         <Row>
                             <input className='input-sig-button' defaultValue="-" type="button"
                                    onClick={setAmountLess}/>
@@ -212,12 +212,12 @@ function App() {
                     </Col>
                 </Row>
                 <Row className="border-top p-1">
-                    <Col>Total</Col>
-                    <Col>{displayPrice} ETH</Col>
+                    <Col className="text-lg-end">TOTAL</Col>
+                    <Col className="text-lg-start">{displayPrice} ETH</Col>
                 </Row>
                 <Row className="border-top p-1">
-                    <Col>Zoguer's Scouted</Col>
-                    <Col>{totalSupply}/{TOTAL_SUPPLY}</Col>
+                    <Col className="text-lg-end">ZOGUERS SOUTED</Col>
+                    <Col className="text-lg-start">{totalSupply}/{TOTAL_SUPPLY}</Col>
                 </Row>
                 <Row className="p-3">
                     <button onClick={mintNftHandler} className='cta-button mint-nft-button rounded shadow p-1'>
@@ -277,28 +277,30 @@ function App() {
     }, [])
 
     return (
-        <Row className='main-body'>
-            <div>
-                <h1>Zogue</h1>
-            </div>
-            <Row className="main-area">
-                <Col></Col>
+        <div>
+            <Row className="m-1 text-center">
                 <Col>
-                    <div className='main-app rounded shadow-lg'>
-                        <Row>
-                            <Col>
-                                {currentAccount ? mintNftButton() : connectWalletButton()}
-                            </Col>
-                            <Col className="d-none d-sm-block">
-                                <img src={lastMint} height={280}
-                                     className='rounded shadow-lg'/>
-                            </Col>
-                        </Row>
-                    </div>
+                    <h1 className="mt-5">ZOGUE</h1>
                 </Col>
-                <Col></Col>
             </Row>
-        </Row>
+            <div className=' d-flex justify-content-center'>
+                <Row className="">
+                    <Col>
+                        <div className='main-app rounded shadow-lg'>
+                            <Row className="">
+                                <Col>
+                                    {currentAccount ? mintNftButton() : connectWalletButton()}
+                                </Col>
+                                <Col className="d-none d-sm-block">
+                                    <img src={lastMint} height={280}
+                                         className='rounded shadow-lg'/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+        </div>
     )
 }
 
