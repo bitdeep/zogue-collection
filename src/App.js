@@ -167,23 +167,27 @@ function App() {
         const amount = e.target.value;
         _setAmount(amount);
     }
-    function _setAmount(amount){
+
+    function _setAmount(amount) {
         setMintAmount(amount)
         const total = parseFloat(currentPrice * amount).toFixed(4)
         setDisplayPrice(total);
     }
-    function setAmountLess(){
+
+    function setAmountLess() {
         let amount = mintAmount;
-        if( amount > 1 ) amount--;
+        if (amount > 1) amount--;
         document.getElementById('inputAmount').value = amount;
         _setAmount(amount)
     }
-    function setAmountPlus(){
+
+    function setAmountPlus() {
         let amount = mintAmount;
         amount++;
         document.getElementById('inputAmount').value = amount;
         _setAmount(amount)
     }
+
     const mintNftButton = () => {
         return (
             <>
@@ -239,19 +243,9 @@ function App() {
                 check: "isMetaMask"
             },
             walletconnect: {
-                package: WalletConnectProvider, // required
+                package: WalletConnectProvider,
                 options: {
-                    infuraId: "INFURA_ID", // Required
-                    qrcodeModalOptions: {
-                        mobileLinks: [
-                            "rainbow",
-                            "metamask",
-                            "argent",
-                            "trust",
-                            "imtoken",
-                            "pillar"
-                        ]
-                    }
+                    infuraId: "647c7c604e3a4164a3400530f46e8e34"
                 }
             },
             authereum: {
@@ -295,7 +289,7 @@ function App() {
                             <Col>
                                 {currentAccount ? mintNftButton() : connectWalletButton()}
                             </Col>
-                            <Col>
+                            <Col className="d-none d-sm-block">
                                 <img src={lastMint} height={280}
                                      className='rounded shadow-lg'/>
                             </Col>
