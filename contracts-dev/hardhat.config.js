@@ -26,11 +26,11 @@ module.exports = {
             url: 'http://localhost:8545',
         },
         mainnet: {
-            url: `https://speedy-nodes-nyc.moralis.io/${process.env.MORALIS}/bsc/mainnet`,
+            url: `https://speedy-nodes-nyc.moralis.io/${process.env.MORALIS}/eth/mainnet`,
             accounts: [`${process.env.PRIVATE_KEY}`]
         },
         testnet: {
-            url: `https://speedy-nodes-nyc.moralis.io/${process.env.MORALIS}/bsc/testnet`,
+            url: `https://speedy-nodes-nyc.moralis.io/${process.env.MORALIS}/eth/ropsten`,
             accounts: [`${process.env.PRIVATE_KEY}`]
         },
     },

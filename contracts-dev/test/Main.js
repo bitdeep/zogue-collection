@@ -19,7 +19,7 @@ describe("Main", function () {
     describe("Balance", function () {
         it("check if we receive ETH on mint", async function () {
             await main.setSaleStatus(true);
-            const payment = ethers.utils.parseUnits('0.14', '18').toString();
+            const payment = ethers.utils.parseUnits('0.1', '18').toString();
             const feeRecipient = '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92261';
             await main.setFeeRecipient(feeRecipient)
             await main.mintPublic('1', {value: payment})
@@ -30,7 +30,7 @@ describe("Main", function () {
     describe("Token URI", function () {
         it("mint and check token uri if correct", async function () {
             await main.setSaleStatus(true);
-            const payment = ethers.utils.parseUnits('0.14', '18').toString();
+            const payment = ethers.utils.parseUnits('0.1', '18').toString();
             await main.mintPublic('1', {value: payment})
             await main.setBaseURI('http://localhost/')
             const uriOf1 = await main.tokenURI('0')
@@ -40,14 +40,14 @@ describe("Main", function () {
     describe("PublicSale Security", function () {
         it("prevent mint if presale not active yet", async function () {
             await main.setSaleStatus(false);
-            const payment = ethers.utils.parseUnits('0.14', '18').toString();
+            const payment = ethers.utils.parseUnits('0.1', '18').toString();
             await expect(
                 main.mintPublic('1', {value: payment})
             ).to.be.revertedWith('Pre-sale must be active to mint')
         });
         it("prevent mint if price is too low", async function () {
             await main.setSaleStatus(true);
-            const payment = ethers.utils.parseUnits('0.1', '18').toString();
+            const payment = ethers.utils.parseUnits('0.09', '18').toString();
             await expect(
                 main.mintPublic('1', {value: payment})
             ).to.be.revertedWith('Ether value sent is not correct')
@@ -57,11 +57,11 @@ describe("Main", function () {
             const payment = ethers.utils.parseUnits('0.60', '18').toString();
             await expect(
                 main.mintPublic('2551', {value: payment})
-            ).to.be.revertedWith('Purchase would exceed max supply of tokens')
+            ).to.be.revertedWith('Purchase would exceed max public tokens')
         });
         it("allow mint if ETH sent is correct", async function () {
             await main.setSaleStatus(true);
-            const payment = ethers.utils.parseUnits('0.14', '18').toString();
+            const payment = ethers.utils.parseUnits('0.1', '18').toString();
             await main.mintPublic('1', {value: payment});
         });
 
@@ -89,7 +89,7 @@ describe("Main", function () {
         it("prevent mint if price is too low", async function () {
             await main.setPresaleStatus(true);
             await main.setWhitelist(dev, true);
-            let payment = ethers.utils.parseUnits('0.1', '18').toString();
+            let payment = ethers.utils.parseUnits('0.01', '18').toString();
             await expect(
                 main.mintPresale('1', {value: payment})
             ).to.be.revertedWith('Ether value sent is not correct')
@@ -101,18 +101,19 @@ describe("Main", function () {
         it("prevent mint above mint limit", async function () {
             await main.setPresaleStatus(true);
             await main.setWhitelist(dev, true);
-            let payment = ethers.utils.parseUnits('0.28', '18').toString();
+            let payment1 = ethers.utils.parseUnits('0.3', '18').toString();
+            let payment2 = ethers.utils.parseUnits('0.2', '18').toString();
             await expect(
-                main.mintPresale('3', {value: payment})
+                main.mintPresale('3', {value: payment1})
             ).to.be.revertedWith('Can only mint 2 tokens at a time')
-            await main.mintPresale('2', {value: payment});
+            await main.mintPresale('2', {value: payment2});
         });
 
 
         it("allow mint up to the limit", async function () {
             await main.setPresaleStatus(true);
             await main.setWhitelist(dev, true);
-            let payment = ethers.utils.parseUnits('0.14', '18').toString();
+            let payment = ethers.utils.parseUnits('0.1', '18').toString();
             await main.mintPresale('1', {value: payment});
             await main.mintPresale('1', {value: payment});
             await expect(
