@@ -8,7 +8,7 @@ import Authereum from "authereum";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import {Container, Row, Col} from "react-bootstrap";
-const contractAddress = "0x73823adE726449E7Ada19d288a5a53cF4Eaf5ffB";
+const contractAddress = "0x6AeCf42F748eaF4335ae9362591619B6D9F68870";
 const abi = contract.abi;
 let web3, ethereum, account, main;
 

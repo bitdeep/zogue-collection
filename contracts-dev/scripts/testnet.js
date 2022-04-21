@@ -2,7 +2,7 @@ const hre = require("hardhat");
 require("@nomiclabs/hardhat-etherscan");
 // npx hardhat run scripts\testnet.js --network testnet
 async function main() {
-
+/*
     const [_dev] = await hre.ethers.getSigners();
     const dev = _dev.address;
     console.log('dev', dev);
@@ -15,9 +15,9 @@ async function main() {
     await Main.setSaleStatus(true);
     await Main.setWhitelist(dev, true);
     await Main.setBaseURI('https://zogue-collection.pages.dev/metadata/');
-
+*/
     await hre.run("verify:verify", {
-        address: Main.address,
+        address: '0x6AeCf42F748eaF4335ae9362591619B6D9F68870',
         constructorArguments: [],
     });
 

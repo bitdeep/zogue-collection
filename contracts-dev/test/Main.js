@@ -71,9 +71,14 @@ describe("Main", function () {
         it("prevent mint if not whitelisted", async function () {
             await main.setPresaleStatus(true);
             const payment = ethers.utils.parseUnits('0.14', '18').toString();
+            const payment1 = ethers.utils.parseUnits('0.28', '18').toString();
+            await main.setPublicSaleLimit(2);
+
+            await main.mintPresale('2', {value: payment1})
+
             await expect(
                 main.mintPresale('1', {value: payment})
-            ).to.be.revertedWith('No whitelisted')
+            ).to.be.revertedWith('Purchase would exceed max public tokens')
         });
 
 
@@ -124,9 +129,14 @@ describe("Main", function () {
         it("prevent minting above presale limit", async function () {
             await main.setWhitelist(dev, true);
             await main.setPresaleStatus(true);
-            let payment = ethers.utils.parseUnits('6.5', '18').toString();
+            await main.setPresaleLimit(10);
+            await main.setMaxMintPerPresale(10);
+            let payment = ethers.utils.parseUnits('0.1', '18').toString();
+            let payment1 = ethers.utils.parseUnits('1', '18').toString();
+            await main.mintPresale('10', {value: payment1})
+
             await expect(
-                main.mintPresale('2551', {value: payment})
+                main.mintPresale('1', {value: payment})
             ).to.be.revertedWith('Purchase would exceed max supply of tokens');
         });
 
