@@ -74,7 +74,7 @@ contract Main is ERC721Enumerable, Ownable {
     function mintPresale(uint numberOfTokens) public payable {
         require(PRESALE_ACTIVE, "Pre-sale must be active to mint");
         if( presaleWhitelist[msg.sender] && presaleMint[msg.sender] < 2 ){
-            // whitelisted
+            // whitelisted & mint < 2
             require(presaleMinted+numberOfTokens <= PRESALE_LIMIT, "Purchase would exceed max supply of tokens");
             require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE, "Can only mint 2 tokens at a time");
             require(PRESALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
@@ -83,19 +83,20 @@ contract Main is ERC721Enumerable, Ownable {
                 presaleMinted++;
                 presaleMint[msg.sender]++;
             }
-        }else if( ! presaleWhitelist[msg.sender] && presaleMint[msg.sender] < 2 ){
-            // non whitelisted and no minte yet
+        }else if( presaleWhitelist[msg.sender] && presaleMint[msg.sender] >= 2 ){
+            // whitelisted mint > 2
             require(presaleMinted+numberOfTokens <= PRESALE_LIMIT, "Purchase would exceed max supply of tokens");
-            require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE, "Can only mint 2 tokens at a time");
+            require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE+MAX_MINT_PER_PUBLICSALE, "Can only mint 2 tokens at a time");
             require(PUBLIC_SALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
             for(uint i = 0; i < numberOfTokens; i++) {
                 _safeMint(msg.sender, totalSupply());
                 presaleMinted++;
                 presaleMint[msg.sender]++;
             }
-        }else if( presaleMint[msg.sender] >= 2 ){
+        }else{
+            // non wl members
             require(publicMinted+numberOfTokens <= PUBLIC_LIMIT, "Purchase would exceed max public tokens");
-            require(publicMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PUBLICSALE, "Can only mint 6 tokens at a time");
+            require(publicMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PUBLICSALE, "Can only mint 4 tokens at a time");
             require(PUBLIC_SALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
             for(uint i = 0; i < numberOfTokens; i++) {
                 _safeMint(msg.sender, totalSupply());

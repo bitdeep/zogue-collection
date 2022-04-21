@@ -9,7 +9,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import {Container, Row, Col} from "react-bootstrap";
 
-const contractAddress = "0x2e8B7A02468f2f9a5839d696eE5b6e4a3107812F"; // ropsten
+const contractAddress = "0xCD8a1C3ba11CF5ECfa6267617243239504a98d90"; // ropsten
 const abi = contract.abi;
 let web3, ethereum, account, main;
 
@@ -217,7 +217,7 @@ function App() {
                     <Col className="text-lg-start">{displayPrice} ETH</Col>
                 </Row>
                 <Row className="border-top p-1">
-                    <Col className="text-lg-end">ZOGUERS SOUTED</Col>
+                    <Col className="text-lg-end">ZOGUERS SCOUTED</Col>
                     <Col className="text-lg-start">{totalSupply} of {TOTAL_LIMIT}</Col>
                 </Row>
                 <Row className="border-top p-1">
