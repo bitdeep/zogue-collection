@@ -27,7 +27,7 @@ body {
 .input-button {
     margin-left:20px;
     border: none;
-    width: 60px;
+    width: 50px;
     color: white;
     cursor: pointer;
     background-color: #36004F;
@@ -36,7 +36,7 @@ body {
     font-weight: bold;
 }
 .input-sig-button{
-    max-width: 20px;
+    max-width: 15px;
     text-align: center;
     border:0px;
     background-color: #36004F;
