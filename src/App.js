@@ -91,7 +91,8 @@ function App() {
         let tx;
         let totalPrice = (weiPrice * mintAmount).toString();
         const args = {from: account, value: totalPrice};
-        console.log(weiPrice.toString(), mintAmount, args);
+        // console.log(weiPrice.toString(), mintAmount, args);
+        const mingMsg = 'Mint completed. Thank you! If WL, feel free to mint up to 4 more at public prices!';
         if (presaleActive) {
             await main.methods.mintPresale(mintAmount)
                 .estimateGas(args, async function (err, res) {
@@ -101,7 +102,7 @@ function App() {
                         tx = await main.methods.mintPresale(mintAmount).send(args);
                         await checkWalletIsConnected();
                         loadLastMintedNft();
-                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
+                        setMintAlert(mingMsg, tx.transactionHash);
                     }
                 });
         } else {
@@ -114,7 +115,7 @@ function App() {
                         tx = await main.methods.mintPublic(mintAmount).send(args);
                         await checkWalletIsConnected();
                         loadLastMintedNft();
-                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
+                        setMintAlert(mingMsg, tx.transactionHash);
                     }
                 });
         }
