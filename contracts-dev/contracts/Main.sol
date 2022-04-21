@@ -85,12 +85,12 @@ contract Main is ERC721Enumerable, Ownable {
             }
         }else if( presaleWhitelist[msg.sender] && presaleMint[msg.sender] >= 2 ){
             // whitelisted mint > 2
-            require(presaleMinted+numberOfTokens <= PRESALE_LIMIT, "Purchase would exceed max supply of tokens");
-            require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE+MAX_MINT_PER_PUBLICSALE, "Can only mint 2 tokens at a time");
+            require(publicMinted+numberOfTokens <= PRESALE_LIMIT, "Purchase would exceed max supply of tokens");
+            require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE+MAX_MINT_PER_PUBLICSALE, "Can only mint 4 tokens at a time");
             require(PUBLIC_SALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
             for(uint i = 0; i < numberOfTokens; i++) {
                 _safeMint(msg.sender, totalSupply());
-                presaleMinted++;
+                publicMinted++;
                 presaleMint[msg.sender]++;
             }
         }else{
