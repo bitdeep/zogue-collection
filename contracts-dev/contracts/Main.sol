@@ -33,8 +33,17 @@ contract Main is ERC721Enumerable, Ownable {
     function setTotalLimit(uint256 val) public onlyOwner {
         TOTAL_LIMIT = val;
     }
+    function setPublicPrice(uint256 val) public onlyOwner {
+        PUBLIC_SALE_PRICE = val;
+    }
+    function setPresalePrice(uint256 val) public onlyOwner {
+        PRESALE_PRICE = val;
+    }
     function setMaxMintPerPresale(uint256 val) public onlyOwner {
         MAX_MINT_PER_PRESALE = val;
+    }
+    function setMaxMintPerPublicSale(uint256 val) public onlyOwner {
+        PUBLIC_SALE_PRICE = val;
     }
     function setPresaleLimit(uint256 val) public onlyOwner {
         PRESALE_LIMIT = val;
@@ -59,9 +68,13 @@ contract Main is ERC721Enumerable, Ownable {
             presaleWhitelist[_addrs[i]] = true;
         }
     }
+
+
+
     function mintPresale(uint numberOfTokens) public payable {
         require(PRESALE_ACTIVE, "Pre-sale must be active to mint");
-        if( presaleWhitelist[msg.sender] ){
+        if( presaleWhitelist[msg.sender] && presaleMint[msg.sender] < 2 ){
+            // whitelisted
             require(presaleMinted+numberOfTokens <= PRESALE_LIMIT, "Purchase would exceed max supply of tokens");
             require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE, "Can only mint 2 tokens at a time");
             require(PRESALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
@@ -70,9 +83,19 @@ contract Main is ERC721Enumerable, Ownable {
                 presaleMinted++;
                 presaleMint[msg.sender]++;
             }
-        }else{
+        }else if( ! presaleWhitelist[msg.sender] && presaleMint[msg.sender] < 2 ){
+            // non whitelisted and no minte yet
+            require(presaleMinted+numberOfTokens <= PRESALE_LIMIT, "Purchase would exceed max supply of tokens");
+            require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE, "Can only mint 2 tokens at a time");
+            require(PUBLIC_SALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
+            for(uint i = 0; i < numberOfTokens; i++) {
+                _safeMint(msg.sender, totalSupply());
+                presaleMinted++;
+                presaleMint[msg.sender]++;
+            }
+        }else if( presaleMint[msg.sender] >= 2 ){
             require(publicMinted+numberOfTokens <= PUBLIC_LIMIT, "Purchase would exceed max public tokens");
-            require(publicMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PUBLICSALE, "Can only mint 4 tokens at a time");
+            require(publicMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PUBLICSALE, "Can only mint 6 tokens at a time");
             require(PUBLIC_SALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
             for(uint i = 0; i < numberOfTokens; i++) {
                 _safeMint(msg.sender, totalSupply());
@@ -86,7 +109,7 @@ contract Main is ERC721Enumerable, Ownable {
         require(SALE_ACTIVE, "Pre-sale must be active to mint");
         require(totalSupply()+numberOfTokens <= TOTAL_LIMIT, "Purchase would exceed max public tokens");
         require(publicMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PUBLICSALE, "Can only mint 4 tokens at a time");
-        require(PRESALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
+        require(PUBLIC_SALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
         for(uint i = 0; i < numberOfTokens; i++) {
             _safeMint(msg.sender, totalSupply());
             publicMinted++;

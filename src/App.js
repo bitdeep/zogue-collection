@@ -8,14 +8,14 @@ import Authereum from "authereum";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import {Container, Row, Col} from "react-bootstrap";
-const contractAddress = "0x6AeCf42F748eaF4335ae9362591619B6D9F68870";
+
+const contractAddress = "0x2e8B7A02468f2f9a5839d696eE5b6e4a3107812F"; // ropsten
 const abi = contract.abi;
 let web3, ethereum, account, main;
 
 function App() {
 
     const [currentAccount, setCurrentAccount] = useState(null);
-    const [currentPrice, setCurrentPrice] = useState(0);
     const [displayPrice, setDisplayPrice] = useState(0);
     const [totalSupply, setTotalSupply] = useState(0);
     const [mintAlert, setMintAlert] = useState('');
@@ -25,7 +25,8 @@ function App() {
     const [presaleWhitelist, setPresaleWhitelist] = useState(false);
     const [lastMint, setLastMint] = useState(logo);
     const [weiPrice, setWeiPrice] = useState(0);
-    const [TOTAL_SUPPLY, setTOTAL_SUPPLY] = useState(0);
+    const [TOTAL_LIMIT, setTotalLimit] = useState(0);
+    const [balanceOf, setBalanceOf] = useState(0);
 
     const checkWalletIsConnected = async () => {
         ethereum = await getweb3();
@@ -45,32 +46,31 @@ function App() {
 
             try {
                 main = new web3.eth.Contract(abi, contractAddress);
-                setPresaleWhitelist(await main.methods.presaleWhitelist(account).call());
-
+                const wlStatus = (await main.methods.presaleWhitelist(account).call());
+                setPresaleWhitelist(wlStatus);
                 setTotalSupply(await main.methods.totalSupply().call());
-                setTOTAL_SUPPLY(await main.methods.TOTAL_SUPPLY().call());
+                setTotalLimit(await main.methods.TOTAL_LIMIT().call());
+                let _balanceOf = await main.methods.balanceOf(account).call();
+                setBalanceOf(_balanceOf);
+                const sale_active = await main.methods.SALE_ACTIVE().call();
+                setSaleActive(sale_active);
+                setMintAlert('Mint is disabled.');
+                const presale = await main.methods.PRESALE_ACTIVE().call();
+                setPresaleActive(presale);
 
-                setSaleActive(await main.methods.SALE_ACTIVE().call());
-                let price = await main.methods.PUBLIC_SALE_PRICE().call();
-                setWeiPrice(price);
-                const _price = parseFloat(price / 1e18).toFixed(4);
-                setCurrentPrice(_price);
-                setDisplayPrice(_price);
-                setMintAlert('You are NOT whitelisted. Minting from public sale.');
-                setPresaleActive(await main.methods.PRESALE_ACTIVE().call());
-
-                if (presaleWhitelist && presaleActive) {
-                    price = await main.methods.PRESALE_PRICE().call();
-                    const _price = parseFloat(price / 1e18).toFixed(4);
-                    setWeiPrice(_price);
-                    setCurrentPrice(_price);
-                    setDisplayPrice(_price);
+                let PRICE = await main.methods.PUBLIC_SALE_PRICE().call();
+                if (wlStatus && presale) {
+                    if (_balanceOf < 2) {
+                        PRICE = await main.methods.PRESALE_PRICE().call();
+                    }
                     setMintAlert('You are whitelisted.');
+                }else if( presale ){
+                    setMintAlert('NOT in WL. Minting from public sale.');
+                }else if( sale_active ){
+                    setMintAlert('Minting from public sale.');
                 }
-                console.log('PRESALE_ACTIVE', presaleActive);
-                console.log('SALE_ACTIVE', saleActive);
-                // loadLastMintedNft();
-
+                setWeiPrice(PRICE);
+                setDisplayPrice( parseFloat(PRICE / 1e18).toFixed(2) );
             } catch (err) {
                 alert('ERROR: CHANGE YOUR NETWORK TO ROPSTEN.');
                 console.log(err.toString());
@@ -82,7 +82,6 @@ function App() {
     }
 
     const mintNftHandler = async () => {
-        let price = currentPrice;
         console.log('PRESALE_ACTIVE', presaleActive);
         console.log('SALE_ACTIVE', saleActive);
         if (!presaleActive && !saleActive) {
@@ -90,30 +89,32 @@ function App() {
             return;
         }
         let tx;
-        const totalPrice = weiPrice * mintAmount;
+        let totalPrice = (weiPrice * mintAmount).toString();
         const args = {from: account, value: totalPrice};
-        console.log('mintAmount', mintAmount);
-        if (presaleWhitelist && presaleActive) {
+        console.log(weiPrice.toString(), mintAmount, args);
+        if (presaleActive) {
             await main.methods.mintPresale(mintAmount)
                 .estimateGas(args, async function (err, res) {
                     if (err) {
                         alert(err.toString());
                     } else {
                         tx = await main.methods.mintPresale(mintAmount).send(args);
-                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
+                        await checkWalletIsConnected();
                         loadLastMintedNft();
+                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
                     }
                 });
-
         } else {
+            console.log('mintPublic')
             await main.methods.mintPublic(mintAmount)
                 .estimateGas(args, async function (err, res) {
                     if (err) {
                         alert(err.toString());
                     } else {
                         tx = await main.methods.mintPublic(mintAmount).send(args);
-                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
+                        await checkWalletIsConnected();
                         loadLastMintedNft();
+                        setMintAlert('Mint completed. Thank you, tx ', tx.transactionHash);
                     }
                 });
         }
@@ -169,7 +170,8 @@ function App() {
 
     function _setAmount(amount) {
         setMintAmount(amount)
-        const total = parseFloat(currentPrice * amount).toFixed(4)
+        const price = parseFloat(weiPrice / 1e18).toFixed(2);
+        const total = parseFloat(price * amount).toFixed(2)
         setDisplayPrice(total);
     }
 
@@ -216,12 +218,18 @@ function App() {
                 </Row>
                 <Row className="border-top p-1">
                     <Col className="text-lg-end">ZOGUERS SOUTED</Col>
-                    <Col className="text-lg-start">{totalSupply}/{TOTAL_SUPPLY}</Col>
+                    <Col className="text-lg-start">{totalSupply} of {TOTAL_LIMIT}</Col>
                 </Row>
-                <Row className="p-3">
-                    <button onClick={mintNftHandler} className='cta-button mint-nft-button rounded shadow p-1'>
+                <Row className="border-top p-1">
+                    <Col className="text-lg-end">MY ZOGUERS</Col>
+                    <Col className="text-lg-start">{balanceOf}</Col>
+                </Row>
+                <Row className="p-1">
+                    {presaleActive || saleActive ?
+                    <button onClick={mintNftHandler}
+                            className='cta-button mint-nft-button rounded shadow p-1'>
                         Mint Now
-                    </button>
+                    </button> : ''}
                 </Row>
                 <Row>
                     <Col className="small p-1">{currentAccount}</Col>
