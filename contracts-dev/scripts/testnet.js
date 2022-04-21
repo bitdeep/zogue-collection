@@ -4,7 +4,7 @@ require("@nomiclabs/hardhat-etherscan");
 async function main() {
 
     const [_dev] = await hre.ethers.getSigners();
-    const dev = _dev.address;
+    const dev = '0xAcE1525D424147082Bb5635df04a01FFd1F60c1F'; // _dev.address;
     console.log('dev', dev);
     const _Main = await hre.ethers.getContractFactory("Main");
     const Main = await _Main.deploy();

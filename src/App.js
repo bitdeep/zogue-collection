@@ -9,7 +9,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import {Container, Row, Col} from "react-bootstrap";
 
-const contractAddress = "0x51A1ceB83B83F1985a81C295d1fF28Afef186E02"; // ropsten
+const contractAddress = "0x8a29554431B91423B003a8A4496532239B977145"; // ropsten
 const abi = contract.abi;
 let web3, ethereum, account, main;
 
