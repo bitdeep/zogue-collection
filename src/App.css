@@ -1,7 +1,13 @@
+@font-face {
+    font-family: 'Gigantic';
+    src: local('Gigantic'), url(./GANTIC_Regular.ttf) format('truetype');
+}
+
 body {
     background-color: #36004F;
     color: #fff;
     background-image: url('bg.png');
+    font-family: Gigantic, Arial;
 }
 
 .main-body {
