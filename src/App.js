@@ -29,6 +29,7 @@ function App() {
     const [balanceOf, setBalanceOf] = useState(0);
 
     const checkWalletIsConnected = async () => {
+
         ethereum = await getweb3();
         if (!ethereum) {
             console.log("Make sure you have Metamask installed!");
@@ -269,7 +270,16 @@ function App() {
         provider.on('error', e => console.error('WS Error', e));
         provider.on('end', e => console.error('WS End', e));
 
+        provider.on("accountsChanged", (accounts) => {
+            checkWalletIsConnected();
+        });
+
+        provider.on("chainChanged", (chainId) => {
+            checkWalletIsConnected();
+        });
+
         provider.on("disconnect", (error) => {
+            alert("disconnect");
             console.log(error);
         });
         provider.on("connect", (info) => {
