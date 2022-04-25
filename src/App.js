@@ -197,7 +197,7 @@ function App() {
                     {mintAlert}
                 </div>
                 <Row className=" p-1">
-                    <h3>BECOME A ZOGUER</h3>
+                    <h3>BECOME A ZOGUER!</h3>
                 </Row>
 
                 <Row className="border-top p-1">
@@ -300,7 +300,7 @@ function App() {
                                     {currentAccount ? mintNftButton() : connectWalletButton()}
                                 </Col>
                                 <Col className="d-none d-sm-block">
-                                    <img src={lastMint} height={280}
+                                    <img src="ZOGUE_GIF.gif" height={280}
                                          className='rounded shadow-lg'/>
                                 </Col>
                             </Row>
