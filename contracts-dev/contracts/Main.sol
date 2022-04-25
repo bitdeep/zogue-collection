@@ -27,7 +27,7 @@ contract Main is ERC721Enumerable, Ownable {
     mapping(address=>bool) public presaleWhitelist;
     mapping(address=>uint) public presaleMint;
     mapping(address=>uint) public publicMint;
-    constructor() ERC721("Test NFT", "test") {
+    constructor() ERC721("ZOGUE", "ZOGUE") {
         FEE_RECIPIENT = msg.sender;
     }
     function setTotalLimit(uint256 val) public onlyOwner {
@@ -85,7 +85,7 @@ contract Main is ERC721Enumerable, Ownable {
             }
         }else if( presaleWhitelist[msg.sender] && presaleMint[msg.sender] >= 2 ){
             // whitelisted mint > 2
-            require(publicMinted+numberOfTokens <= PRESALE_LIMIT, "Purchase would exceed max supply of tokens");
+            require(publicMinted+numberOfTokens <= PUBLIC_LIMIT, "Purchase would exceed max supply of tokens");
             require(presaleMint[msg.sender]+numberOfTokens <= MAX_MINT_PER_PRESALE+MAX_MINT_PER_PUBLICSALE, "Can only mint 4 tokens at a time");
             require(PUBLIC_SALE_PRICE*numberOfTokens == msg.value, "Ether value sent is not correct");
             for(uint i = 0; i < numberOfTokens; i++) {
