@@ -137,7 +137,7 @@ contract Main is ERC721Enumerable, Ownable {
     override(ERC721)
     returns (string memory)
     {
-        return super.tokenURI(tokenId);
+        return string(abi.encodePacked(super.tokenURI(tokenId), ".json"));
     }
     function setBaseURI(string memory baseURI) public onlyOwner {
         _baseURIPrefix = baseURI;
