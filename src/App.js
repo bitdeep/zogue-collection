@@ -9,7 +9,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import {Container, Row, Col} from "react-bootstrap";
 
-const contractAddress = "0x8a29554431B91423B003a8A4496532239B977145"; // ropsten
+const contractAddress = "0xedb38B5CF833e7b3E53312950D2255Cf756A9A90"; // ropsten
 const abi = contract.abi;
 let web3, ethereum, account, main;
 
@@ -73,7 +73,7 @@ function App() {
                 setWeiPrice(PRICE);
                 setDisplayPrice( parseFloat(PRICE / 1e18).toFixed(2) );
             } catch (err) {
-                alert('ERROR: CHANGE YOUR NETWORK TO ROPSTEN.');
+                alert('ERROR: CHANGE YOUR NETWORK TO ETHEREUM.');
                 console.log(err.toString());
             }
 
